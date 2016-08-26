@@ -1,16 +1,16 @@
 // CA Game Of Life.cpp : Defines the entry point for the console application.
 
-/*	
-								Game Of Life
+/*
+                                          Game Of Life
 	Conditions:
 		.Alive:3 Moore Neighbours OR 2 Moore Neighbours and Previously Alive
 		.Dead: If Not Alive
 
 	Kernel:
-		.3*3 Matrix 
+		.3*3 Matrix
 		.Centre Element = 0;
 		.All the Rest   = 1; [Kept 1/8 in program so as to keep convolution sum within matrix range(8*1/8=1)]
-	
+
 	Program Description:
 		.Captures Image From Camera To Obtain Randomised Initial Generation Condition
 		.Convolution Done Using Standard Filtering Func in OpenCV[Filter2D()]
@@ -63,7 +63,7 @@ int main()
 {
 	//Initialising Timer
 	DECLARE_TIMING(T);
-	
+
 	//Initialising Camera
 	IplImage* IF;
 	CvCapture* Cap = cvCreateCameraCapture(0);
@@ -76,7 +76,7 @@ int main()
 
 	//Error Handling
 	if(!IF)	return 0;
-	
+
 	//Initialising Image Data Structures
 	IplImage* IFT		= cvCreateImage(cvSize(IF->width,IF->height), 8, 3);
 	IplImage* IG		= cvCreateImage(cvSize(IF->width/2,IF->height/2), 8, 3);
@@ -87,16 +87,16 @@ int main()
 
 	//Scaling Down Captured Image
 	cvPyrDown(IF,IG);
-	
+
 	//Converting 2 Grayscale
 	cvCvtColor(IG,IG,CV_BGR2HSV);
 //	cvCvtColor(IG,IGray,CV_HSV2GRAY);
 	cvSplit(IG,IGray,0,0,0);
-	
+
 	//Copying IG to IGT
 	cvCvtColor(IG,IGT,CV_BGR2RGB);
 	cvCvtColor(IGT,IGT,CV_RGB2BGR);
-	
+
 	//Release Camera
 	cvReleaseCapture(&Cap);
 	cvReleaseImage(&IF);
@@ -107,7 +107,7 @@ int main()
 	IplImage GrayScale = C;
 	IplImage SeedState = B;
 	//Performing Histogram Equlaization
-	equalizeHist(C,B);	
+	equalizeHist(C,B);
 	cvShowImage("Original",&GrayScale);
 	cvShowImage("Histogram Equalized",&SeedState);
 
@@ -118,7 +118,7 @@ int main()
 	//Image Converted To 64-Bit Floating Type & Scaled to 1
 	B.convertTo (B, CV_64F, 1.0 / 255.0);
 	C.convertTo (C, CV_64F, 1.0 / 255.0);
-	
+
 	//Defining Kernel
 	double N = 1.0 / 8.0;
 	Mat Ker = Mat::ones(3,3,CV_64F)*N;	//Setting Elements to N;
@@ -135,7 +135,7 @@ int main()
 	//Rule Definition
 	int Down = 2;
 	int Up = 3;
-	
+
 	//Initial Square Alive
 	for(int i=B.rows/2-K;i<B.rows/2+K;i++)
 	{		for(int j=B.cols/2-K;j<B.cols/2+K;j++)
@@ -149,16 +149,15 @@ int main()
 	{
 		//Loop Timing
 		START_TIMING(T);
-		
+
 		//Performing Convolution On 'B'(Source{Initialised}) wrt 'Ker'(Kernel) & Storing in 'C'(Destination)
 		filter2D(B, C, -1, Ker, Point(-1,-1), 0, BORDER_REFLECT);
 
-	
 		//Updating Generation
 		for(int i=0;i<C.rows;i++)
 		{
 			for(int j=0;j<C.cols;j++)
-			{	
+			{
 				if(i<C.rows/2+K && i>C.rows/2-K && j<C.cols/2+K && j>C.cols/2-K)
 				{
 					//If <2 OR >3 Moore Neighbours
@@ -170,13 +169,13 @@ int main()
 							 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 							//cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 						 }
-					 
+
 						 else									//Dying
 						 {
 							 B.at<double>(i,j) = 0;
 							 cvSet2D(IGT, i, j, cvScalar(0,0,255));
 						 }
-					}	
+					}
 
 					//If 2 Moore Neighbours
 					else if ((int)(C.at<double>(i,j)/N) == Down)
@@ -187,7 +186,7 @@ int main()
 							 cvSet2D(IGT, i, j, cvScalar(0,255,0));
 							 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 						}
-						
+
 						else									//Staying Alive
 						{
 							 B.at<double>(i,j) = 1;
@@ -197,13 +196,13 @@ int main()
 
 					//If 3 Moore Neighbours
 					else
-					{	
+					{
 						if((int)(B.at<double>(i,j)/N) == 0)			//Coming Alive
 						{
 							 B.at<double>(i,j) = 1;
 							 cvSet2D(IGT, i, j, cvScalar(255,0,0));
 						}
-	
+
 						else									//Staying Alive
 						{
 							 B.at<double>(i,j) = 1;
@@ -220,12 +219,12 @@ int main()
 							 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 							//cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 						 }
-					 
+
 						 else									//Dying
 						 {
 							 B.at<double>(i,j) = 0;
 							 cvSet2D(IGT, i, j, cvScalar(0,0,255));
-						 }			
+						 }
 				}
 */
 				else
@@ -239,13 +238,13 @@ int main()
 							 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 							//cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 						 }
-					 
+
 						 else									//Dying
 						 {
 							 B.at<double>(i,j) = 0;
 							 cvSet2D(IGT, i, j, cvScalar(0,0,255));
 						 }
-					}	
+					}
 
 					//If 2 Moore Neighbours
 					else if ((int)(C.at<double>(i,j)/N) == Down)
@@ -256,7 +255,7 @@ int main()
 							 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 							 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 						}
-						
+
 						else									//Staying Alive
 						{
 							 B.at<double>(i,j) = 1;
@@ -266,13 +265,13 @@ int main()
 
 					//If 3 Moore Neighbours
 					else
-					{	
+					{
 						if((int)(B.at<double>(i,j)/N) == 0)			//Coming Alive
 						{
 							 B.at<double>(i,j) = 1;
 							 cvSet2D(IGT, i, j, cvScalar(255,0,0));
 						}
-	
+
 						else									//Staying Alive
 						{
 							 B.at<double>(i,j) = 1;
@@ -301,27 +300,27 @@ int main()
 		//Displaying B&W Evolution[Image Size Scaled Down]
 		//cvShowImage("Evolution Environment : GOL",IGray);
 		//imshow("B&W Evolution Environment",B);
-		
+
 		//Copying Back Original Image(For Evolution on Original Image)
 		cvCvtColor(IG,IGT,CV_BGR2RGB);
 		cvCvtColor(IGT,IGT,CV_RGB2BGR);
 
 		//Evolution Generations
 		Gen++;
-		
+
 		//Loop Timing
 		STOP_TIMING(T);
 		printf("%fms\t",GET_TIMING(T));
 
 		//Exiting Evolution Loop
 		if((char)cvWaitKey(20)==27)
-		{	
+		{
 			//Evaluating & Displaying Average Loop Timing
 			printf("\n\nAverage Loop Time:%fms\nEvolution Generations: %d",GET_AVERAGE_TIMING(T),Gen);
 			cvPyrUp(IFT,ISave2);
 			cvPyrUp(ISave2,ISave4);
 			cvSaveImage("C:\\New Downloads\\Life_2.jpg",ISave4);
-			
+
 			//Escape Sequence
 			if((char)cvWaitKey(0)==27)
 			{
@@ -360,7 +359,7 @@ int main()
 {
 	//Initialising Timer
 	DECLARE_TIMING(T);
-	
+
 	//Initialising Camera
 	IplImage* IF;
 	CvCapture* Cap = cvCreateCameraCapture(0);
@@ -373,7 +372,7 @@ int main()
 
 	//Error Handling
 	if(!IF)	return 0;
-	
+
 	//Initialising Image Data Structures
 	IplImage* IFT		= cvCreateImage(cvSize(IF->width,IF->height), 8, 3);
 	IplImage* IG		= cvCreateImage(cvSize(IF->width/2,IF->height/2), 8, 3);
@@ -382,16 +381,16 @@ int main()
 
 	//Scaling Down Captured Image
 	cvPyrDown(IF,IG);
-	
+
 	//Converting 2 Grayscale
 	cvCvtColor(IG,IG,CV_BGR2HSV);
 //	cvCvtColor(IG,IGray,CV_HSV2GRAY);
 	cvSplit(IG,IGray,0,0,0);
-	
+
 	//Copying IG to IGT
 	cvCvtColor(IG,IGT,CV_BGR2RGB);
 	cvCvtColor(IGT,IGT,CV_RGB2BGR);
-	
+
 	//Release Camera
 	cvReleaseCapture(&Cap);
 
@@ -401,15 +400,15 @@ int main()
 	IplImage GrayScale = C;
 	IplImage SeedState = B;
 	//Performing Histogram Equlaization
-	equalizeHist(C,B);	
+	equalizeHist(C,B);
 	cvShowImage("Original",&GrayScale);
 	cvShowImage("Histogram Equalized",&SeedState);
-		
+
 	//Image Converted To 64-Bit Floating Type & Scaled to 1
 	B.convertTo (B, CV_64F, 1.0 / 255.0);
 
 	C.convertTo (C, CV_64F, 1.0 / 255.0);
-	
+
 	//Defining Kernel
 	double N = 1.0 / 8.0;
 	Mat Ker = Mat::ones(3,3,CV_64F)*N;	//Setting Elements to N;
@@ -427,15 +426,15 @@ int main()
 	{
 		//Loop Timing
 		START_TIMING(T);
-		
+
 		//Performing Convolution On 'B'(Source{Initialised}) wrt 'Ker'(Kernel) & Storing in 'C'(Destination)
 		filter2D(B, C, -1, Ker, Point(-1,-1), 0, BORDER_REFLECT);
-	
+
 		//Updating Generation
 		for(int i=0;i<C.rows;i++)
 		{
 			for(int j=0;j<C.cols;j++)
-			{	
+			{
 
 				//If <2 OR >3 Moore Neighbours
 				if ((int)(C.at<double>(i,j)/N)<2 | (int)(C.at<double>(i,j)/N)>3)
@@ -446,7 +445,7 @@ int main()
 						 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 						 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 					 }
-					 
+
 					 else									//Dying
 					 {
 						 B.at<double>(i,j) = 0;
@@ -463,7 +462,7 @@ int main()
 						 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 						 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 					}
-					
+
 					else									//Staying Alive
 					{
 						 B.at<double>(i,j) = 1;
@@ -496,24 +495,24 @@ int main()
 		//Displaying B&W Evolution[Image Size Scaled Down]
 		//cvShowImage("Evolution Environment : GOL",IGray);
 		//imshow("B&W Evolution Environment",B);
-		
+
 		//Copying Back Original Image(For Evolution on Original Image)
 		cvCvtColor(IG,IGT,CV_BGR2RGB);
 		cvCvtColor(IGT,IGT,CV_RGB2BGR);
 
 		//Evolution Generations
 		Gen++;
-		
+
 		//Loop Timing
 		STOP_TIMING(T);
 		printf("%fms\t",GET_TIMING(T));
 
 		//Exiting Evolution Loop
 		if((char)cvWaitKey(20)==27)
-		{	
+		{
 			//Evaluating & Displaying Average Loop Timing
 			printf("\n\nAverage Loop Time:%fms\nEvolution Generations: %d",GET_AVERAGE_TIMING(T),Gen);
-			
+
 			//Escape Sequence
 			if((char)cvWaitKey(0)==27)
 			{
@@ -539,7 +538,7 @@ int main()
 						 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 						 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 					 }
-					 
+
 					 else						//Dying
 					 {
 						 B.at<double>(i,j) = 0;
@@ -556,7 +555,7 @@ int main()
 						 cvSet2D(IGT, i, j, cvScalar(255,255,255));
 						 //cvSet2D(IGT, i, j, cvGet2D(IGT,i,j));//For Evolution On Original Image
 					}
-					
+
 					else						//Staying Alive
 					{
 						 B.at<double>(i,j) = 1;
@@ -591,9 +590,9 @@ int main()
 
 					else							//Conditions For Death
 						B[i][j]='O';
-	
+
 				}
-					
+
  				//Conditions For Wolf Cell
 				else if(A[i][j]=='Y')
 				{
@@ -603,16 +602,16 @@ int main()
 					else						//Conditions For Death
 						B[i][j]='O';
 				}
-				
+
 				//Conditions For Inert Cell
-				else if(A[i][j]=='O')			
+				else if(A[i][j]=='O')
 				{
 					if(T==3 && T1<4)				//Condition For Birth
 						B[i][j]='X';
 
 					else if(T1>1 && T>0)			//Condition For Birth
 						B[i][j]='Y';
-						
+
 					else							//Conditions To Remain Dead
 						B[i][j]='O';
 
@@ -627,7 +626,7 @@ int main()
 						B.at<double>(i,j) = 0;
 						cvSet2D(IGT, i, j, cvScalar(0,0,255));
 					}
-					
+
 					else
 					{
 						B.at<double>(i,j) = 1;
@@ -641,7 +640,7 @@ int main()
 						B.at<double>(i,j) = 0;
 						cvSet2D(IGT, i, j, cvScalar(0,0,255));
 					}
-					
+
 					else
 					{
 						B.at<double>(i,j) = 0;

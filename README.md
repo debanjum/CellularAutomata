@@ -3,6 +3,8 @@ CellularAutomata: Game Of Life
 
 > Explorations in Cellular Automata
 
+<br /><p align="center"><img src="./gol.gif"/></p>
+
 Dependencies:
 ---------------
 + [OpenCV](http://opencv.org/)
