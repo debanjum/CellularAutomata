@@ -43,8 +43,11 @@
 
 
 #include "stdio.h"
-#include <cv.h>
-#include <highgui.h>
+//#include <cv.h>
+//#include <highgui.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
@@ -136,9 +139,16 @@ int main()
 	int Down = 2;
 	int Up = 3;
 
+	// Init Birth, Deaths
+	int Births = 0;
+	int Deaths = 0;
+
+	//Open Birth, Death Logs CSV File
+	FILE *fp = fopen("birth_deaths.csv", "w+");
+	
 	//Initial Square Alive
 	for(int i=B.rows/2-K;i<B.rows/2+K;i++)
-	{		for(int j=B.cols/2-K;j<B.cols/2+K;j++)
+	    {	for(int j=B.cols/2-K;j<B.cols/2+K;j++)
 		{
 			B.at<double>(i,j) = 1;
 		}
@@ -149,6 +159,10 @@ int main()
 	{
 		//Loop Timing
 		START_TIMING(T);
+
+		// Reset Births, Deaths for new Generation
+		Births = 0;
+		Deaths = 0;
 
 		//Performing Convolution On 'B'(Source{Initialised}) wrt 'Ker'(Kernel) & Storing in 'C'(Destination)
 		filter2D(B, C, -1, Ker, Point(-1,-1), 0, BORDER_REFLECT);
@@ -174,6 +188,7 @@ int main()
 						 {
 							 B.at<double>(i,j) = 0;
 							 cvSet2D(IGT, i, j, cvScalar(0,0,255));
+							 Deaths += 1;
 						 }
 					}
 
@@ -201,6 +216,7 @@ int main()
 						{
 							 B.at<double>(i,j) = 1;
 							 cvSet2D(IGT, i, j, cvScalar(255,0,0));
+							 Births += 1;
 						}
 
 						else									//Staying Alive
@@ -243,6 +259,7 @@ int main()
 						 {
 							 B.at<double>(i,j) = 0;
 							 cvSet2D(IGT, i, j, cvScalar(0,0,255));
+							 Deaths += 1;
 						 }
 					}
 
@@ -270,6 +287,7 @@ int main()
 						{
 							 B.at<double>(i,j) = 1;
 							 cvSet2D(IGT, i, j, cvScalar(255,0,0));
+							 Births += 1;
 						}
 
 						else									//Staying Alive
@@ -310,8 +328,9 @@ int main()
 
 		//Loop Timing
 		STOP_TIMING(T);
-		printf("%fms\t",GET_TIMING(T));
-
+		//printf("%fms\t",GET_TIMING(T));
+		fprintf(fp, "%d, %d\n", Births, Deaths);
+		
 		//Exiting Evolution Loop
 		if((char)cvWaitKey(20)==27)
 		{
@@ -326,6 +345,7 @@ int main()
 			{
 				CLEAR_AVERAGE_TIMING(T);
 				DEALLOC();
+				fclose(fp);
 				return 0;
 			}
 		}
@@ -333,6 +353,7 @@ int main()
 
 	//Deallocating & Exiting Program
 	DEALLOC();
+	fclose(fp);
 	return 0;
 }
 
